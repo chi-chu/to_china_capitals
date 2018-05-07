@@ -1,0 +1,13 @@
+// $Id$
+// vim:ft=javascript
+
+// If your extension references something external, use ARG_WITH
+// ARG_WITH("to_china_capitals", "for to_china_capitals support", "no");
+
+// Otherwise, use ARG_ENABLE
+// ARG_ENABLE("to_china_capitals", "enable to_china_capitals support", "no");
+
+if (PHP_TO_CHINA_CAPITALS != "no") {
+	EXTENSION("to_china_capitals", "to_china_capitals.c", PHP_EXTNAME_SHARED, "/DZEND_ENABLE_STATIC_TSRMLS_CACHE=1");
+}
+
