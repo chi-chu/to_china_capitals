@@ -61,11 +61,13 @@ PHP_FUNCTION(to_china_capitals)
 	if (zend_parse_parameters(ZEND_NUM_ARGS(), "d", &innum) == FAILURE) {
 		RETURN_FALSE;
 	}
-	int numcount = 0,flag = 0;
+	short numcount = 0, flag = 0, shift = 0;
         unsigned long long_innum, temp_long_innum;
-        double tempdouble = 1.0;
-        wchar_t cstrs[] = {0x96F6,0x58F9,0x8D30,0x53C4,0x8086,0x4F0D,0x9678,0x67D2,0x634C,0x7396};
-        wchar_t bit[] = {0x5706,0x62FE,0x4F70,0x4EDF,0x842C,0x62FE,0x4F70,0x4EDF,0x5104,0x62FE,0x4F70,0x4EDF,0x842C,0x62FE};
+        double tempdouble = 1.00;
+        char cstrs[] = "零壹贰叄肆伍陆柒捌玖\0";
+        char bit[] = "圆拾佰仟萬拾佰仟萬拾佰仟萬拾\0";
+        char bits[] = "角分\0";
+        char retstr[100];
         setlocale(LC_ALL, "");
         if(innum >= 1){
             while(tempdouble < innum){
@@ -77,16 +79,38 @@ PHP_FUNCTION(to_china_capitals)
             while(tempdouble >= 1){
                 temp_long_innum = (unsigned long)long_innum / tempdouble;
                 flag = temp_long_innum % 10;
-                printf("%lc", cstrs[flag]);
+                retstr[shift] = cstrs[flag*3];
+                retstr[shift+1] = cstrs[flag*3+1];
+                retstr[shift+2] = cstrs[flag*3+2];
+                shift += 3;
                 --numcount;
-                if(flag != 0){
-                    printf("%lc", bit[numcount]);
-                }
+                //if(flag != 0){
+                    retstr[shift] = bit[numcount*3];
+                    retstr[shift+1] = bit[numcount*3+1];
+                    retstr[shift+2] = bit[numcount*3+2];
+                    shift += 3;
+                //}
                 tempdouble = tempdouble/10;
             }
         }
-        printf("%lc%lc", cstrs[(long int)(innum*10)%10], 0x89D2);
-        printf("%lc%lc", cstrs[(long int)(innum*10)%10], 0x5206);
+        flag = (int)(innum*10)%10;
+        retstr[shift] = cstrs[flag*3];
+        retstr[shift+1] = cstrs[flag*3+1];
+        retstr[shift+2] = cstrs[flag*3+2];
+        retstr[shift+3] = bits[0];
+        retstr[shift+4] = bits[1];
+        retstr[shift+5] = bits[2];
+        shift += 6;
+        flag = (int)(innum*100)%10;
+        retstr[shift] = cstrs[flag*3];
+        retstr[shift+1] = cstrs[flag*3+1];
+        retstr[shift+2] = cstrs[flag*3+2];
+        retstr[shift+3] = bits[3];
+        retstr[shift+4] = bits[4];
+        retstr[shift+5] = bits[5];
+        retstr[shift+6] = bits[6];
+        strg = strpprintf(0, "%s", retstr);
+        RETURN_STR(strg);
 }
 /* }}} */
 /* The previous line is meant for vim and emacs, so it can correctly fold and
